@@ -3,7 +3,7 @@
     <SideNavBar />
 
     <!-- Main Content Area -->
-    <div class="ml-[260px] flex-1 flex flex-col h-full bg-background relative">
+    <div class="flex-1 flex flex-col h-full bg-background relative overflow-hidden">
       <router-view />
     </div>
   </div>

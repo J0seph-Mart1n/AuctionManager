@@ -1,50 +1,53 @@
 <template>
-  <nav class="fixed left-0 top-0 h-full w-[260px] border-r rounded-none border-r-surface-container-high bg-[#1E293B] flex flex-col overflow-y-auto">
-    <div class="p-6 border-b border-surface-container-high flex flex-col gap-2">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-primary-container rounded flex items-center justify-center text-primary font-bold text-xl">A</div>
-        <h1 class="text-emerald-500 font-bold text-lg tracking-tight">AuctionPro</h1>
+  <nav :class="[
+    'h-full border-r rounded-none border-r-surface-container-high bg-[#1E293B] flex flex-col overflow-y-auto transition-all duration-300 ease-in-out shrink-0',
+    isCollapsed ? 'w-[62px]' : 'w-[300px]'
+  ]">
+    <div class="p-4 border-b border-surface-container-high flex flex-col gap-2 min-h-[76px] justify-center">
+      <div class="flex items-center gap-3" :class="isCollapsed ? 'justify-center' : ''">
+        <button @click="isCollapsed = !isCollapsed" class="text-slate-400 hover:text-slate-200 hover:bg-slate-800 p-2 rounded transition-colors flex shrink-0 items-center justify-center">
+          <span class="material-symbols-outlined text-[20px]">menu</span>
+        </button>
+        <h1 v-show="!isCollapsed" class="text-emerald-500 font-bold text-lg tracking-tight whitespace-nowrap overflow-hidden">Auction Manager</h1>
       </div>
-      <div class="mt-4">
-        <h2 class="font-headline-md text-headline-md text-on-surface">Auction Console</h2>
-        <div class="flex items-center gap-1.5 mt-1">
-          <span class="w-2 h-2 rounded-full bg-error"></span>
-          <span class="font-label-caps text-label-caps text-error">Offline Mode Active</span>
-        </div>
+      <div class="mt-2" v-show="!isCollapsed">
+        <h2 class="font-headline-md text-headline-md text-on-surface whitespace-nowrap overflow-hidden">Auction Console</h2>
       </div>
     </div>
 
     <div class="flex-1 py-4 flex flex-col gap-1">
       <router-link to="/pre-auction" :class="[
-        'flex items-center px-4 py-3 transition-all duration-200 ease-in-out font-inter text-[13px] font-semibold',
-        route.path === '/pre-auction' ? 'bg-[#0F172A] text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
-      ]">
-        <span class="material-symbols-outlined mr-3">calendar_today</span> Pre-Auction
+        'flex items-center py-3 transition-all duration-200 ease-in-out font-inter text-[13px] font-semibold',
+        route.path === '/pre-auction' ? 'bg-[#0F172A] text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800 border-l-4 border-transparent',
+        isCollapsed ? 'px-0 justify-center' : 'px-4'
+      ]" :title="isCollapsed ? 'Pre-Auction' : ''">
+        <span class="material-symbols-outlined shrink-0" :class="isCollapsed ? 'mr-0' : 'mr-3'">calendar_today</span>
+        <span v-show="!isCollapsed" class="whitespace-nowrap overflow-hidden">Pre-Auction</span>
       </router-link>
       <router-link to="/" :class="[
-        'flex items-center px-4 py-3 transition-all duration-200 ease-in-out font-inter text-[13px] font-semibold',
-        route.path === '/' ? 'bg-[#0F172A] text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
-      ]">
-        <span class="material-symbols-outlined mr-3" :class="{'text-secondary animate-pulse': route.path === '/'}">gavel</span> Live Auction
+        'flex items-center py-3 transition-all duration-200 ease-in-out font-inter text-[13px] font-semibold',
+        route.path === '/' ? 'bg-[#0F172A] text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800 border-l-4 border-transparent',
+        isCollapsed ? 'px-0 justify-center' : 'px-4'
+      ]" :title="isCollapsed ? 'Live Auction' : ''">
+        <span class="material-symbols-outlined shrink-0" :class="[{'text-secondary animate-pulse': route.path === '/'}, isCollapsed ? 'mr-0' : 'mr-3']">gavel</span>
+        <span v-show="!isCollapsed" class="whitespace-nowrap overflow-hidden">Live Auction</span>
       </router-link>
       <router-link to="/post-auction" :class="[
-        'flex items-center px-4 py-3 transition-all duration-200 ease-in-out font-inter text-[13px] font-semibold',
-        route.path === '/post-auction' ? 'bg-[#0F172A] text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
-      ]">
-        <span class="material-symbols-outlined mr-3">fact_check</span> Post-Auction
+        'flex items-center py-3 transition-all duration-200 ease-in-out font-inter text-[13px] font-semibold',
+        route.path === '/post-auction' ? 'bg-[#0F172A] text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800 border-l-4 border-transparent',
+        isCollapsed ? 'px-0 justify-center' : 'px-4'
+      ]" :title="isCollapsed ? 'Post-Auction' : ''">
+        <span class="material-symbols-outlined shrink-0" :class="isCollapsed ? 'mr-0' : 'mr-3'">fact_check</span>
+        <span v-show="!isCollapsed" class="whitespace-nowrap overflow-hidden">Post-Auction</span>
       </router-link>
-    </div>
-
-    <div class="mt-auto border-t border-surface-container-high py-4">
-      <a href="#" class="text-slate-400 flex items-center px-4 py-3 hover:text-slate-200 hover:bg-slate-800 transition-all duration-200 ease-in-out font-inter text-[13px] font-semibold">
-        <span class="material-symbols-outlined mr-3">terminal</span> System Config
-      </a>
     </div>
   </nav>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
+const isCollapsed = ref(false)
 </script>
