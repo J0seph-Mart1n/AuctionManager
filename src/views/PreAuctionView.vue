@@ -3,7 +3,7 @@
   <div class="bg-background text-on-surface font-body-base h-screen overflow-hidden flex w-full">
 
     <!-- Main Content Area -->
-    <main class="flex-1 ml-64 flex flex-col h-screen relative">
+    <main class="flex-1 flex flex-col h-screen relative">
       <!-- TopNavBar Component -->
       <header class="bg-[#0F172A] text-emerald-500 dark:text-emerald-400 font-inter text-sm font-medium tracking-tight border-b border-slate-700 flex items-center justify-between px-6 h-14 w-full z-10 shrink-0">
         <div class="text-lg font-black tracking-tighter text-slate-50 uppercase flex items-center">
