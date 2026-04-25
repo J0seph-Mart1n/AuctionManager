@@ -1,0 +1,273 @@
+<template>
+  <!-- Wrapper replacing the body tag -->
+  <div class="bg-background text-on-surface font-body-base h-screen overflow-hidden flex w-full">
+
+    <!-- Main Content Area -->
+    <main class="flex-1 ml-64 flex flex-col h-screen relative">
+      <!-- TopNavBar Component -->
+      <header class="bg-[#0F172A] text-emerald-500 dark:text-emerald-400 font-inter text-sm font-medium tracking-tight border-b border-slate-700 flex items-center justify-between px-6 h-14 w-full z-10 shrink-0">
+        <div class="text-lg font-black tracking-tighter text-slate-50 uppercase flex items-center">
+          AuctionPro
+          <span class="ml-4 px-2 py-0.5 bg-surface-container rounded text-xs text-outline font-label-caps tracking-widest border border-outline-variant/30">Catalog Management</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <button aria-label="wifi_off" class="text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors active:bg-slate-700 duration-75 p-2 rounded flex items-center justify-center">
+            <span class="material-symbols-outlined text-[20px]">wifi_off</span>
+          </button>
+          <button aria-label="settings" class="text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors active:bg-slate-700 duration-75 p-2 rounded flex items-center justify-center">
+            <span class="material-symbols-outlined text-[20px]">settings</span>
+          </button>
+          <div class="h-6 w-px bg-slate-700 mx-2"></div>
+          <button class="text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors active:bg-slate-700 duration-75 px-3 py-1.5 rounded flex items-center gap-2">
+            Backup <span class="text-xs opacity-50 font-mono">[F10]</span>
+          </button>
+          <button class="bg-secondary-container text-on-secondary-container hover:brightness-110 active:brightness-90 transition-all duration-75 px-4 py-1.5 rounded font-bold flex items-center gap-2">
+            Clerk
+          </button>
+        </div>
+      </header>
+
+      <!-- Canvas -->
+      <div class="flex-1 overflow-auto bg-background p-6 flex flex-col gap-6">
+        <!-- Action Bar -->
+        <div class="flex items-center justify-between bg-surface-container-low p-4 rounded-lg border border-surface-container-highest shrink-0">
+          <div class="flex items-center gap-4 w-1/2">
+            <div class="relative w-full max-w-md">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
+              <input 
+                v-model="searchQuery"
+                type="text" 
+                placeholder="Search lot number, title, consignor... [Ctrl+F]" 
+                class="w-full bg-surface text-on-surface border border-outline-variant rounded pl-10 pr-4 py-2 focus:border-secondary focus:ring-1 focus:ring-secondary focus:outline-none transition-colors font-body-base text-body-base placeholder:text-on-surface-variant" 
+              />
+            </div>
+            <button class="p-2 border border-outline-variant rounded text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-colors">
+              <span class="material-symbols-outlined text-[18px]">filter_list</span>
+            </button>
+          </div>
+          <div class="flex items-center gap-3">
+            <button @click="exportData" class="px-4 py-2 border border-outline-variant rounded text-on-surface hover:bg-surface-variant transition-colors flex items-center gap-2 font-data-tabular text-data-tabular">
+              <span class="material-symbols-outlined text-[18px]">download</span> Export
+            </button>
+            <button @click="addNewItem" class="px-4 py-2 bg-secondary text-on-secondary rounded hover:brightness-110 active:brightness-90 transition-all flex items-center gap-2 font-label-caps text-label-caps uppercase shadow-[0_0_10px_rgba(78,222,163,0.2)]">
+              <span class="material-symbols-outlined text-[18px]">add</span> Add New Item
+              <span class="text-[10px] opacity-70 ml-1 font-mono normal-case tracking-normal">[Ins]</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Data Table Container -->
+        <div class="bg-surface-container-low rounded-lg border border-surface-container-highest flex-1 flex flex-col overflow-hidden">
+          <div class="overflow-x-auto flex-1">
+            <table class="w-full text-left border-collapse whitespace-nowrap">
+              <thead class="bg-surface-container sticky top-0 z-10">
+                <tr>
+                  <th class="py-3 px-4 font-label-caps text-label-caps text-outline uppercase border-b border-surface-container-highest w-12 text-center">
+                    <input type="checkbox" class="rounded bg-surface border-outline-variant text-secondary focus:ring-secondary focus:ring-offset-background" @change="toggleAll" />
+                  </th>
+                  <th class="py-3 px-4 font-label-caps text-label-caps text-secondary uppercase border-b border-surface-container-highest w-24">
+                    Lot # <span class="material-symbols-outlined text-[14px] align-middle ml-1">arrow_downward</span>
+                  </th>
+                  <th class="py-3 px-4 font-label-caps text-label-caps text-outline uppercase border-b border-surface-container-highest">Item Title & Description</th>
+                  <th class="py-3 px-4 font-label-caps text-label-caps text-outline uppercase border-b border-surface-container-highest w-32 text-right">Reserve</th>
+                  <th class="py-3 px-4 font-label-caps text-label-caps text-outline uppercase border-b border-surface-container-highest w-48">Consignor</th>
+                  <th class="py-3 px-4 font-label-caps text-label-caps text-outline uppercase border-b border-surface-container-highest w-24 text-center">Status</th>
+                  <th class="py-3 px-4 font-label-caps text-label-caps text-outline uppercase border-b border-surface-container-highest w-24 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="font-data-tabular text-data-tabular divide-y divide-surface-container-highest">
+                
+                <!-- Dynamic Rows -->
+                <tr v-for="item in filteredItems" :key="item.id" class="hover:bg-surface-variant/50 transition-colors group cursor-default">
+                  <td class="py-3 px-4 text-center">
+                    <input type="checkbox" v-model="item.selected" class="rounded bg-surface border-outline-variant text-secondary focus:ring-secondary focus:ring-offset-background opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </td>
+                  <td class="py-3 px-4">
+                    <span class="font-lot-id-display text-headline-md text-secondary tracking-tight">{{ item.lotNumber }}</span>
+                  </td>
+                  <td class="py-3 px-4">
+                    <div class="flex flex-col">
+                      <span class="text-on-surface font-semibold truncate max-w-md">{{ item.title }}</span>
+                      <span class="text-on-surface-variant text-xs truncate max-w-md font-body-base">{{ item.description }}</span>
+                    </div>
+                  </td>
+                  <td class="py-3 px-4 text-right text-primary-fixed font-mono">{{ item.reserve }}</td>
+                  <td class="py-3 px-4 text-on-surface-variant">{{ item.consignor }}</td>
+                  <td class="py-3 px-4 text-center">
+                    <span 
+                      class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border"
+                      :class="statusClasses(item.status)"
+                    >
+                      {{ item.status }}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 text-right">
+                    <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button @click="editItem(item.id)" class="p-1 text-on-surface-variant hover:text-secondary transition-colors" title="Edit [E]">
+                        <span class="material-symbols-outlined text-[18px]">edit</span>
+                      </button>
+                      <button @click="deleteItem(item.id)" class="p-1 text-on-surface-variant hover:text-error transition-colors" title="Delete [Del]">
+                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Empty State -->
+                <tr v-if="filteredItems.length === 0">
+                  <td colspan="7" class="py-8 text-center text-on-surface-variant">
+                    No items found matching your search.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Pagination Footer -->
+          <div class="bg-surface-container p-3 border-t border-surface-container-highest flex items-center justify-between text-on-surface-variant text-sm shrink-0">
+            <div>
+              Showing <span class="font-semibold text-on-surface">1</span> to <span class="font-semibold text-on-surface">{{ filteredItems.length }}</span> of <span class="font-semibold text-on-surface">{{ items.length }}</span> items
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="p-1 hover:text-on-surface transition-colors disabled:opacity-50" disabled>
+                <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+              </button>
+              <span class="font-data-tabular">Page 1 of 1</span>
+              <button class="p-1 hover:text-on-surface transition-colors disabled:opacity-50" disabled>
+                <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue'
+
+const searchQuery = ref('')
+
+// Mock Data
+const items = ref([
+  { 
+    id: 1, 
+    lotNumber: '1001', 
+    title: '1967 Ford Mustang Shelby GT500', 
+    description: 'Original condition, matching numbers, 428 Police Interceptor V8.', 
+    reserve: '$125,000', 
+    consignor: 'Classic Motors LLC', 
+    status: 'Pending',
+    selected: false
+  },
+  { 
+    id: 2, 
+    lotNumber: '1002', 
+    title: 'Patek Philippe Nautilus Ref. 5711', 
+    description: 'Stainless steel, blue dial, complete with box and papers.', 
+    reserve: '$85,000', 
+    consignor: 'Private Collector (ID: 442)', 
+    status: 'Ready',
+    selected: false
+  },
+  { 
+    id: 3, 
+    lotNumber: '1003', 
+    title: 'Original Banksy Screenprint "Girl with Balloon"', 
+    description: 'Signed edition of 150. Pest Control COA included.', 
+    reserve: '$150,000', 
+    consignor: 'Urban Art Gallery', 
+    status: 'Ready',
+    selected: false
+  },
+  { 
+    id: 4, 
+    lotNumber: '1004', 
+    title: 'Mid-Century Modern Teak Credenza', 
+    description: 'Hans Wegner for Ry Møbler. Minor restoration needed on left door.', 
+    reserve: '$4,500', 
+    consignor: 'Estate Liquidators Inc.', 
+    status: 'Action Req.',
+    selected: false
+  }
+])
+
+// Computed property for Search Filtering
+const filteredItems = computed(() => {
+  if (!searchQuery.value) return items.value
+  
+  const query = searchQuery.value.toLowerCase()
+  return items.value.filter(item => 
+    item.title.toLowerCase().includes(query) || 
+    item.lotNumber.toLowerCase().includes(query) ||
+    item.consignor.toLowerCase().includes(query)
+  )
+})
+
+// Dynamic classes for Status Badges
+const statusClasses = (status) => {
+  switch (status) {
+    case 'Pending':
+      return 'bg-surface-container-highest text-on-surface-variant border-outline-variant/30'
+    case 'Ready':
+      return 'bg-secondary-container/20 text-secondary border-secondary/30'
+    case 'Action Req.':
+      return 'bg-error-container/30 text-error border-error/30'
+    default:
+      return 'bg-surface text-on-surface border-outline-variant'
+  }
+}
+
+// Methods
+const toggleAll = (event) => {
+  const isChecked = event.target.checked
+  filteredItems.value.forEach(item => {
+    item.selected = isChecked
+  })
+}
+
+const addNewItem = () => {
+  alert('Open Add New Item Modal')
+}
+
+const editItem = (id) => {
+  alert(`Edit Item ID: ${id}`)
+}
+
+const deleteItem = (id) => {
+  if(confirm('Are you sure you want to delete this item?')) {
+    items.value = items.value.filter(item => item.id !== id)
+  }
+}
+
+const exportData = () => {
+  alert('Exporting Catalog Data...')
+}
+</script>
+
+<style scoped>
+/* Material Icons Configuration */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.material-symbols-outlined[data-weight="fill"] {
+  font-variation-settings: 'FILL' 1;
+}
+
+/* Custom Scrollbar for Data Tables and Application */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #051426; 
+}
+::-webkit-scrollbar-thumb {
+  background: #273649; 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #45464d; 
+}
+</style>

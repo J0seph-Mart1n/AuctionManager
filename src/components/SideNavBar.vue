@@ -15,16 +15,24 @@
     </div>
 
     <div class="flex-1 py-4 flex flex-col gap-1">
-      <a href="#" class="text-slate-400 flex items-center px-4 py-3 hover:text-slate-200 hover:bg-slate-800 transition-all duration-200 ease-in-out font-inter text-[13px] font-semibold">
+      <router-link to="/pre-auction" :class="[
+        'flex items-center px-4 py-3 transition-all duration-200 ease-in-out font-inter text-[13px] font-semibold',
+        route.path === '/pre-auction' ? 'bg-[#0F172A] text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+      ]">
         <span class="material-symbols-outlined mr-3">calendar_today</span> Pre-Auction
-      </a>
-      <!-- Active State -->
-      <a href="#" class="bg-[#0F172A] text-emerald-400 border-l-4 border-emerald-500 flex items-center px-4 py-3 transition-all duration-200 ease-in-out font-inter text-[13px] font-semibold">
-        <span class="material-symbols-outlined mr-3 text-secondary animate-pulse">gavel</span> Live Auction
-      </a>
-      <a href="#" class="text-slate-400 flex items-center px-4 py-3 hover:text-slate-200 hover:bg-slate-800 transition-all duration-200 ease-in-out font-inter text-[13px] font-semibold">
+      </router-link>
+      <router-link to="/" :class="[
+        'flex items-center px-4 py-3 transition-all duration-200 ease-in-out font-inter text-[13px] font-semibold',
+        route.path === '/' ? 'bg-[#0F172A] text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+      ]">
+        <span class="material-symbols-outlined mr-3" :class="{'text-secondary animate-pulse': route.path === '/'}">gavel</span> Live Auction
+      </router-link>
+      <router-link to="/post-auction" :class="[
+        'flex items-center px-4 py-3 transition-all duration-200 ease-in-out font-inter text-[13px] font-semibold',
+        route.path === '/post-auction' ? 'bg-[#0F172A] text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+      ]">
         <span class="material-symbols-outlined mr-3">fact_check</span> Post-Auction
-      </a>
+      </router-link>
     </div>
 
     <div class="mt-auto border-t border-surface-container-high py-4">
@@ -36,5 +44,7 @@
 </template>
 
 <script setup>
-// SideNavBar component — reusable across all screens
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 </script>
