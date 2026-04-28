@@ -5,45 +5,22 @@
     <!-- Main Content Area -->
     <main class="flex-1 flex flex-col h-screen relative">
       <!-- TopNavBar Component -->
-      <header class="bg-[#0F172A] text-emerald-500 dark:text-emerald-400 font-inter text-sm font-medium tracking-tight border-b border-slate-700 flex items-center justify-between px-6 h-14 w-full z-10 shrink-0">
-        <div class="text-lg font-black tracking-tighter text-slate-50 uppercase flex items-center">
-          AuctionPro
-          <span class="ml-4 px-2 py-0.5 bg-surface-container rounded text-xs text-outline font-label-caps tracking-widest border border-outline-variant/30">Catalog Management</span>
-        </div>
-        <div class="flex items-center gap-4">
-          <button aria-label="wifi_off" class="text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors active:bg-slate-700 duration-75 p-2 rounded flex items-center justify-center">
-            <span class="material-symbols-outlined text-[20px]">wifi_off</span>
-          </button>
-          <button aria-label="settings" class="text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors active:bg-slate-700 duration-75 p-2 rounded flex items-center justify-center">
-            <span class="material-symbols-outlined text-[20px]">settings</span>
-          </button>
-          <div class="h-6 w-px bg-slate-700 mx-2"></div>
-          <button class="text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors active:bg-slate-700 duration-75 px-3 py-1.5 rounded flex items-center gap-2">
-            Backup <span class="text-xs opacity-50 font-mono">[F10]</span>
-          </button>
-          <button class="bg-secondary-container text-on-secondary-container hover:brightness-110 active:brightness-90 transition-all duration-75 px-4 py-1.5 rounded font-bold flex items-center gap-2">
-            Clerk
-          </button>
-        </div>
-      </header>
+      <TopNavBar />
 
       <!-- Canvas -->
       <div class="flex-1 overflow-auto bg-background p-6 flex flex-col gap-6">
         <!-- Action Bar -->
         <div class="flex items-center justify-between bg-surface-container-low p-4 rounded-lg border border-surface-container-highest shrink-0">
-          <div class="flex items-center gap-4 w-1/2">
-            <div class="relative w-full max-w-md">
+          <div class="flex items-center gap-4 flex-1 mr-6">
+            <div class="relative w-full">
               <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
               <input 
                 v-model="searchQuery"
                 type="text" 
-                placeholder="Search lot number, title, consignor... [Ctrl+F]" 
+                placeholder="Search [Ctrl+F]" 
                 class="w-full bg-surface text-on-surface border border-outline-variant rounded pl-10 pr-4 py-2 focus:border-secondary focus:ring-1 focus:ring-secondary focus:outline-none transition-colors font-body-base text-body-base placeholder:text-on-surface-variant" 
               />
             </div>
-            <button class="p-2 border border-outline-variant rounded text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-colors">
-              <span class="material-symbols-outlined text-[18px]">filter_list</span>
-            </button>
           </div>
           <div class="flex items-center gap-3">
             <button @click="exportData" class="px-4 py-2 border border-outline-variant rounded text-on-surface hover:bg-surface-variant transition-colors flex items-center gap-2 font-data-tabular text-data-tabular">
@@ -66,12 +43,11 @@
                     <input type="checkbox" class="rounded bg-surface border-outline-variant text-secondary focus:ring-secondary focus:ring-offset-background" @change="toggleAll" />
                   </th>
                   <th class="py-3 px-4 font-label-caps text-label-caps text-secondary uppercase border-b border-surface-container-highest w-24">
-                    Lot # <span class="material-symbols-outlined text-[14px] align-middle ml-1">arrow_downward</span>
+                    Item <span class="material-symbols-outlined text-[14px] align-middle ml-1">arrow_downward</span>
                   </th>
                   <th class="py-3 px-4 font-label-caps text-label-caps text-outline uppercase border-b border-surface-container-highest">Item Title & Description</th>
-                  <th class="py-3 px-4 font-label-caps text-label-caps text-outline uppercase border-b border-surface-container-highest w-32 text-right">Reserve</th>
-                  <th class="py-3 px-4 font-label-caps text-label-caps text-outline uppercase border-b border-surface-container-highest w-48">Consignor</th>
-                  <th class="py-3 px-4 font-label-caps text-label-caps text-outline uppercase border-b border-surface-container-highest w-24 text-center">Status</th>
+                  <th class="py-3 px-4 font-label-caps text-label-caps text-outline uppercase border-b border-surface-container-highest w-32 text-right">Amount</th>
+                  <th class="py-3 px-4 font-label-caps text-label-caps text-outline uppercase border-b border-surface-container-highest w-48">Shop</th>
                   <th class="py-3 px-4 font-label-caps text-label-caps text-outline uppercase border-b border-surface-container-highest w-24 text-right">Actions</th>
                 </tr>
               </thead>
@@ -85,22 +61,14 @@
                   <td class="py-3 px-4">
                     <span class="font-lot-id-display text-headline-md text-secondary tracking-tight">{{ item.lotNumber }}</span>
                   </td>
-                  <td class="py-3 px-4">
+                  <td class="py-3 px-4 w-full max-w-[1px]">
                     <div class="flex flex-col">
-                      <span class="text-on-surface font-semibold truncate max-w-md">{{ item.title }}</span>
-                      <span class="text-on-surface-variant text-xs truncate max-w-md font-body-base">{{ item.description }}</span>
+                      <span class="text-on-surface font-semibold truncate">{{ item.title }}</span>
+                      <span class="text-on-surface-variant text-xs truncate font-body-base">{{ item.description }}</span>
                     </div>
                   </td>
                   <td class="py-3 px-4 text-right text-primary-fixed font-mono">{{ item.reserve }}</td>
                   <td class="py-3 px-4 text-on-surface-variant">{{ item.consignor }}</td>
-                  <td class="py-3 px-4 text-center">
-                    <span 
-                      class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border"
-                      :class="statusClasses(item.status)"
-                    >
-                      {{ item.status }}
-                    </span>
-                  </td>
                   <td class="py-3 px-4 text-right">
                     <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button @click="editItem(item.id)" class="p-1 text-on-surface-variant hover:text-secondary transition-colors" title="Edit [E]">
@@ -141,13 +109,23 @@
         </div>
       </div>
     </main>
+
+    <!-- Add Item Modal Component -->
+    <AddItemModal 
+      :show="showAddModal" 
+      @close="closeAddModal" 
+      @save="saveNewItem" 
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
+import TopNavBar from '@/components/TopNavBar.vue'
+import AddItemModal from '@/components/AddItemModal.vue'
 
 const searchQuery = ref('')
+const showAddModal = ref(false)
 
 // Mock Data
 const items = ref([
@@ -228,7 +206,26 @@ const toggleAll = (event) => {
 }
 
 const addNewItem = () => {
-  alert('Open Add New Item Modal')
+  showAddModal.value = true
+}
+
+const closeAddModal = () => {
+  showAddModal.value = false
+}
+
+const saveNewItem = (itemData) => {
+  items.value.unshift({
+    id: Date.now(),
+    lotNumber: (1000 + items.value.length + 1).toString(),
+    title: itemData.title,
+    description: itemData.description,
+    reserve: itemData.amount.startsWith('$') ? itemData.amount : `$${itemData.amount}`,
+    consignor: itemData.shop,
+    status: 'Ready',
+    selected: false
+  })
+  
+  closeAddModal()
 }
 
 const editItem = (id) => {

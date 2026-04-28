@@ -5,29 +5,7 @@
     <div class="flex-1 flex flex-col min-h-screen">
       
       <!-- TopNavBar -->
-      <header class="bg-[#0F172A] flex items-center justify-between px-6 h-14 w-full border-b border-slate-700 z-10 sticky top-0">
-        <div class="flex items-center gap-4">
-          <span class="text-lg font-black tracking-tighter text-slate-50 uppercase">AuctionPro</span>
-        </div>
-        <div class="flex items-center gap-6">
-          <div class="flex items-center gap-4">
-            <button class="font-inter text-sm font-medium tracking-tight text-emerald-500 dark:text-emerald-400 hover:bg-slate-800 transition-colors active:bg-slate-700 duration-75 px-3 py-1.5 rounded-DEFAULT flex items-center gap-2">
-              Clerk
-            </button>
-            <button class="font-inter text-sm font-medium tracking-tight text-slate-400 hover:bg-slate-800 transition-colors active:bg-slate-700 duration-75 px-3 py-1.5 rounded-DEFAULT flex items-center gap-2 border border-slate-700">
-              Backup [F10]
-            </button>
-          </div>
-          <div class="flex items-center gap-2 border-l border-slate-700 pl-4">
-            <button class="text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors p-2 rounded-DEFAULT flex items-center justify-center">
-              <span class="material-symbols-outlined">wifi_off</span>
-            </button>
-            <button class="text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors p-2 rounded-DEFAULT flex items-center justify-center">
-              <span class="material-symbols-outlined">settings</span>
-            </button>
-          </div>
-        </div>
-      </header>
+      <TopNavBar />
 
       <!-- Main Workspace (POS Terminal Layout) -->
       <main class="flex-1 p-gutter grid grid-cols-12 gap-gutter h-[calc(100vh-3.5rem)] overflow-hidden">
@@ -178,6 +156,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import TopNavBar from '@/components/TopNavBar.vue'
 
 // --- State Variables ---
 const searchQuery = ref('Bidder #402 - Smithson, J')

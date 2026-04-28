@@ -1,28 +1,6 @@
 <template>
   <!-- TopNavBar -->
-  <header class="flex items-center justify-between px-6 h-14 w-full docked full-width top border-b border-b-slate-700 bg-[#0F172A] flat no shadows z-10">
-    <div class="flex items-center">
-      <span class="font-inter text-sm font-medium tracking-tight text-emerald-500 dark:text-emerald-400">Live Execution Console</span>
-    </div>
-    <div class="flex items-center gap-4">
-      <div class="flex items-center gap-2 border-r border-slate-700 pr-4">
-        <button class="text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors p-2 rounded flex items-center gap-2 font-inter text-[13px] font-semibold">
-          Backup [F10]
-        </button>
-        <button class="bg-primary-container text-on-primary-container px-3 py-1.5 rounded text-[13px] font-bold border border-outline-variant hover:bg-slate-800 transition-colors">
-          Clerk
-        </button>
-      </div>
-      <div class="flex items-center gap-2">
-        <button class="text-slate-400 hover:text-slate-200 hover:bg-slate-800 p-1.5 rounded transition-colors active:bg-slate-700 duration-75">
-          <span class="material-symbols-outlined text-[20px]">wifi_off</span>
-        </button>
-        <button class="text-slate-400 hover:text-slate-200 hover:bg-slate-800 p-1.5 rounded transition-colors active:bg-slate-700 duration-75">
-          <span class="material-symbols-outlined text-[20px]">settings</span>
-        </button>
-      </div>
-    </div>
-  </header>
+  <TopNavBar />
 
   <!-- Canvas -->
   <main class="flex-1 overflow-hidden flex p-6 gap-6">
@@ -173,6 +151,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import TopNavBar from '@/components/TopNavBar.vue'
 
 // Form State
 const form = ref({
