@@ -110,15 +110,26 @@
         </div>
       </div>
     </div>
+    
+    <!-- Edit Entry Modal Component -->
+    <EditEntryModal 
+      :show="showEditModal" 
+      :initial-data="entryToEdit"
+      @close="closeEditModal" 
+      @save="saveEntry" 
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
 import TopNavBar from '@/components/TopNavBar.vue'
+import EditEntryModal from '@/components/EditEntryModal.vue'
 
 // --- State Variables ---
 const searchQuery = ref('')
+const showEditModal = ref(false)
+const entryToEdit = ref(null)
 
 // Mocked Entries Data (representing data created in LiveAuction)
 const entries = ref([
@@ -159,7 +170,25 @@ const toggleAll = (event) => {
 }
 
 const editEntry = (id) => {
-  alert(`Editing Entry ID: ${id}`)
+  const entry = entries.value.find(e => e.id === id)
+  if (entry) {
+    entryToEdit.value = { ...entry }
+    showEditModal.value = true
+  }
+}
+
+const closeEditModal = () => {
+  showEditModal.value = false
+}
+
+const saveEntry = (entryData) => {
+  if (entryData.id) {
+    const index = entries.value.findIndex(e => e.id === entryData.id)
+    if (index !== -1) {
+      entries.value[index] = { ...entryData }
+    }
+  }
+  closeEditModal()
 }
 
 const deleteEntry = (id) => {
