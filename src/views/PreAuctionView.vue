@@ -134,7 +134,7 @@ const items = ref([
     lotNumber: '1001', 
     title: '1967 Ford Mustang Shelby GT500', 
     description: 'Original condition, matching numbers, 428 Police Interceptor V8.', 
-    reserve: '$125,000', 
+    reserve: '₹125,000', 
     consignor: 'Classic Motors LLC', 
     status: 'Pending',
     selected: false
@@ -144,7 +144,7 @@ const items = ref([
     lotNumber: '1002', 
     title: 'Patek Philippe Nautilus Ref. 5711', 
     description: 'Stainless steel, blue dial, complete with box and papers.', 
-    reserve: '$85,000', 
+    reserve: '₹85,000', 
     consignor: 'Private Collector (ID: 442)', 
     status: 'Ready',
     selected: false
@@ -154,7 +154,7 @@ const items = ref([
     lotNumber: '1003', 
     title: 'Original Banksy Screenprint "Girl with Balloon"', 
     description: 'Signed edition of 150. Pest Control COA included.', 
-    reserve: '$150,000', 
+    reserve: '₹150,000', 
     consignor: 'Urban Art Gallery', 
     status: 'Ready',
     selected: false
@@ -164,7 +164,7 @@ const items = ref([
     lotNumber: '1004', 
     title: 'Mid-Century Modern Teak Credenza', 
     description: 'Hans Wegner for Ry Møbler. Minor restoration needed on left door.', 
-    reserve: '$4,500', 
+    reserve: '₹4,500', 
     consignor: 'Estate Liquidators Inc.', 
     status: 'Action Req.',
     selected: false
@@ -219,7 +219,7 @@ const saveNewItem = (itemData) => {
     lotNumber: (1000 + items.value.length + 1).toString(),
     title: itemData.title,
     description: itemData.description,
-    reserve: itemData.amount.startsWith('$') ? itemData.amount : `$${itemData.amount}`,
+    reserve: itemData.amount.startsWith('₹') ? itemData.amount : `₹${itemData.amount}`,
     consignor: itemData.shop,
     status: 'Ready',
     selected: false

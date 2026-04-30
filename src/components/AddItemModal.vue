@@ -19,7 +19,7 @@
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block font-label-caps text-label-caps text-on-surface-variant mb-2 uppercase">Amount *</label>
-            <input v-model="newItem.amount" type="text" placeholder="$0.00" class="w-full bg-surface-container-highest border border-outline-variant rounded px-4 py-2 font-body-base text-body-base text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary focus:outline-none transition-colors" />
+            <input v-model="newItem.amount" type="text" placeholder="₹0.00" class="w-full bg-surface-container-highest border border-outline-variant rounded px-4 py-2 font-body-base text-body-base text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary focus:outline-none transition-colors" />
           </div>
           <div>
             <label class="block font-label-caps text-label-caps text-on-surface-variant mb-2 uppercase">Shop *</label>
