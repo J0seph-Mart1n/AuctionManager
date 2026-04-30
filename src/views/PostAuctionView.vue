@@ -125,6 +125,7 @@
 import { ref, computed } from 'vue'
 import TopNavBar from '@/components/TopNavBar.vue'
 import EditEntryModal from '@/components/EditEntryModal.vue'
+import { exportToCSV } from '@/utils/export.js'
 
 // --- State Variables ---
 const searchQuery = ref('')
@@ -198,7 +199,15 @@ const deleteEntry = (id) => {
 }
 
 const exportData = () => {
-  alert('Exporting data to CSV...')
+  const dataToExport = filteredEntries.value.map(entry => ({
+    'Item Name': entry.itemName,
+    'Bidder Name': entry.bidderName,
+    'Ward Name': entry.wardName,
+    'Payment Method': entry.paymentMethod,
+    'Payment Status': entry.paymentDone ? 'PAID' : 'UNPAID',
+    'Amount': entry.amount
+  }))
+  exportToCSV(dataToExport, 'LiveAuction_Entries.csv')
 }
 </script>
 

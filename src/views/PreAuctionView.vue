@@ -124,6 +124,7 @@
 import { ref, computed } from 'vue'
 import TopNavBar from '@/components/TopNavBar.vue'
 import AddItemModal from '@/components/AddItemModal.vue'
+import { exportToCSV } from '@/utils/export.js'
 
 const searchQuery = ref('')
 const showAddModal = ref(false)
@@ -217,7 +218,6 @@ const saveItem = (itemData) => {
       description: itemData.description,
       amount: formattedReserve,
       shop: itemData.shop,
-      status: 'Ready',
       selected: false
     })
   }
@@ -246,7 +246,14 @@ const deleteItem = (id) => {
 }
 
 const exportData = () => {
-  alert('Exporting Catalog Data...')
+  const dataToExport = filteredItems.value.map(item => ({
+    'Item No': item.itemNumber,
+    'Title': item.title,
+    'Description': item.description,
+    'Amount': item.amount,
+    'Shop': item.shop,
+  }))
+  exportToCSV(dataToExport, 'PreAuction_Catalog.csv')
 }
 </script>
 
