@@ -59,7 +59,7 @@
                     <input type="checkbox" v-model="item.selected" class="rounded bg-surface border-outline-variant text-secondary focus:ring-secondary focus:ring-offset-background opacity-0 group-hover:opacity-100 transition-opacity" />
                   </td>
                   <td class="py-3 px-4">
-                    <span class="font-lot-id-display text-headline-md text-secondary tracking-tight">{{ item.lotNumber }}</span>
+                    <span class="font-lot-id-display text-headline-md text-secondary tracking-tight">{{ item.itemNumber }}</span>
                   </td>
                   <td class="py-3 px-4 w-full max-w-[1px]">
                     <div class="flex flex-col">
@@ -67,8 +67,8 @@
                       <span class="text-on-surface-variant text-xs truncate font-body-base">{{ item.description }}</span>
                     </div>
                   </td>
-                  <td class="py-3 px-4 text-right text-primary-fixed font-mono">{{ item.reserve }}</td>
-                  <td class="py-3 px-4 text-on-surface-variant">{{ item.consignor }}</td>
+                  <td class="py-3 px-4 text-right text-primary-fixed font-mono">{{ item.amount }}</td>
+                  <td class="py-3 px-4 text-on-surface-variant">{{ item.shop }}</td>
                   <td class="py-3 px-4 text-right">
                     <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button @click="editItem(item.id)" class="p-1 text-on-surface-variant hover:text-secondary transition-colors" title="Edit [E]">
@@ -113,8 +113,9 @@
     <!-- Add Item Modal Component -->
     <AddItemModal 
       :show="showAddModal" 
+      :initial-data="itemToEdit"
       @close="closeAddModal" 
-      @save="saveNewItem" 
+      @save="saveItem" 
     />
   </div>
 </template>
@@ -126,47 +127,44 @@ import AddItemModal from '@/components/AddItemModal.vue'
 
 const searchQuery = ref('')
 const showAddModal = ref(false)
+const itemToEdit = ref(null)
 
 // Mock Data
 const items = ref([
   { 
     id: 1, 
-    lotNumber: '1001', 
+    itemNumber: '1001', 
     title: '1967 Ford Mustang Shelby GT500', 
     description: 'Original condition, matching numbers, 428 Police Interceptor V8.', 
-    reserve: '₹125,000', 
-    consignor: 'Classic Motors LLC', 
-    status: 'Pending',
+    amount: '₹125,000', 
+    shop: 'Classic Motors LLC', 
     selected: false
   },
   { 
     id: 2, 
-    lotNumber: '1002', 
+    itemNumber: '1002', 
     title: 'Patek Philippe Nautilus Ref. 5711', 
     description: 'Stainless steel, blue dial, complete with box and papers.', 
-    reserve: '₹85,000', 
-    consignor: 'Private Collector (ID: 442)', 
-    status: 'Ready',
+    amount: '₹85,000', 
+    shop: 'Private Collector (ID: 442)', 
     selected: false
   },
   { 
     id: 3, 
-    lotNumber: '1003', 
+    itemNumber: '1003', 
     title: 'Original Banksy Screenprint "Girl with Balloon"', 
     description: 'Signed edition of 150. Pest Control COA included.', 
-    reserve: '₹150,000', 
-    consignor: 'Urban Art Gallery', 
-    status: 'Ready',
+    amount: '₹150,000', 
+    shop: 'Urban Art Gallery', 
     selected: false
   },
   { 
     id: 4, 
-    lotNumber: '1004', 
+    itemNumber: '1004', 
     title: 'Mid-Century Modern Teak Credenza', 
     description: 'Hans Wegner for Ry Møbler. Minor restoration needed on left door.', 
-    reserve: '₹4,500', 
-    consignor: 'Estate Liquidators Inc.', 
-    status: 'Action Req.',
+    amount: '₹4,500', 
+    shop: 'Estate Liquidators Inc.', 
     selected: false
   }
 ])
@@ -178,24 +176,10 @@ const filteredItems = computed(() => {
   const query = searchQuery.value.toLowerCase()
   return items.value.filter(item => 
     item.title.toLowerCase().includes(query) || 
-    item.lotNumber.toLowerCase().includes(query) ||
-    item.consignor.toLowerCase().includes(query)
+    item.itemNumber.toLowerCase().includes(query) ||
+    item.shop.toLowerCase().includes(query)
   )
 })
-
-// Dynamic classes for Status Badges
-const statusClasses = (status) => {
-  switch (status) {
-    case 'Pending':
-      return 'bg-surface-container-highest text-on-surface-variant border-outline-variant/30'
-    case 'Ready':
-      return 'bg-secondary-container/20 text-secondary border-secondary/30'
-    case 'Action Req.':
-      return 'bg-error-container/30 text-error border-error/30'
-    default:
-      return 'bg-surface text-on-surface border-outline-variant'
-  }
-}
 
 // Methods
 const toggleAll = (event) => {
@@ -206,6 +190,7 @@ const toggleAll = (event) => {
 }
 
 const addNewItem = () => {
+  itemToEdit.value = null
   showAddModal.value = true
 }
 
@@ -213,23 +198,45 @@ const closeAddModal = () => {
   showAddModal.value = false
 }
 
-const saveNewItem = (itemData) => {
-  items.value.unshift({
-    id: Date.now(),
-    lotNumber: (1000 + items.value.length + 1).toString(),
-    title: itemData.title,
-    description: itemData.description,
-    reserve: itemData.amount.startsWith('₹') ? itemData.amount : `₹${itemData.amount}`,
-    consignor: itemData.shop,
-    status: 'Ready',
-    selected: false
-  })
+const saveItem = (itemData) => {
+  const formattedReserve = itemData.amount.startsWith('₹') ? itemData.amount : `₹${itemData.amount}`
+  
+  if (itemData.id) {
+    const index = items.value.findIndex(i => i.id === itemData.id)
+    if (index !== -1) {
+      items.value[index].title = itemData.title
+      items.value[index].description = itemData.description
+      items.value[index].amount = formattedReserve
+      items.value[index].shop = itemData.shop
+    }
+  } else {
+    items.value.unshift({
+      id: Date.now(),
+      itemNumber: (1000 + items.value.length + 1).toString(),
+      title: itemData.title,
+      description: itemData.description,
+      amount: formattedReserve,
+      shop: itemData.shop,
+      status: 'Ready',
+      selected: false
+    })
+  }
   
   closeAddModal()
 }
 
 const editItem = (id) => {
-  alert(`Edit Item ID: ${id}`)
+  const item = items.value.find(i => i.id === id)
+  if (item) {
+    itemToEdit.value = {
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      amount: item.amount.replace('₹', '').replace(',', ''),
+      shop: item.shop
+    }
+    showAddModal.value = true
+  }
 }
 
 const deleteItem = (id) => {

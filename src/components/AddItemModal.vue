@@ -2,7 +2,7 @@
   <div v-if="show" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-surface-container rounded-lg border border-surface-container-highest shadow-xl w-full max-w-2xl overflow-hidden flex flex-col">
       <div class="p-6 border-b border-surface-container-highest bg-[#1E293B] flex justify-between items-center">
-        <h2 class="text-xl font-bold text-on-surface">Add New Item</h2>
+        <h2 class="text-xl font-bold text-on-surface">{{ isEditing ? 'Edit Item' : 'Add New Item' }}</h2>
         <button @click="$emit('close')" class="text-slate-400 hover:text-white transition-colors">
           <span class="material-symbols-outlined">close</span>
         </button>
@@ -32,7 +32,7 @@
           Cancel
         </button>
         <button @click="handleSave" class="px-4 py-2 bg-secondary text-on-secondary hover:brightness-110 active:brightness-90 rounded transition-all font-semibold">
-          Add Item
+          {{ isEditing ? 'Save Changes' : 'Add Item' }}
         </button>
       </div>
     </div>
@@ -40,12 +40,16 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 
 const props = defineProps({
   show: {
     type: Boolean,
     default: false
+  },
+  initialData: {
+    type: Object,
+    default: null
   }
 })
 
@@ -58,10 +62,16 @@ const newItem = ref({
   shop: ''
 })
 
+const isEditing = computed(() => !!props.initialData)
+
 // Reset form when modal opens
 watch(() => props.show, (newVal) => {
   if (newVal) {
-    newItem.value = { title: '', description: '', amount: '', shop: '' }
+    if (props.initialData) {
+      newItem.value = { ...props.initialData }
+    } else {
+      newItem.value = { title: '', description: '', amount: '', shop: '' }
+    }
   }
 })
 
