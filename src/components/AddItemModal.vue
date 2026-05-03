@@ -76,6 +76,10 @@ watch(() => props.show, (newVal) => {
 })
 
 const handleSave = () => {
+  if (isNaN(newItem.value.amount)) {
+    alert("Amount should be a number")
+    return
+  }
   if (!newItem.value.title || !newItem.value.amount || !newItem.value.shop) {
     alert("Please fill in the required fields (Title, Amount, Shop)")
     return

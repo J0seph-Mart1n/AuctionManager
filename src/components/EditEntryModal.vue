@@ -25,7 +25,7 @@
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block font-label-caps text-label-caps text-on-surface-variant mb-2 uppercase">Amount *</label>
-            <input v-model="editItem.amount" type="number" placeholder="0" class="w-full bg-surface-container-highest border border-outline-variant rounded px-4 py-2 font-body-base text-body-base text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary focus:outline-none transition-colors" />
+            <input v-model="editItem.amount" type="text" placeholder="0" class="w-full bg-surface-container-highest border border-outline-variant rounded px-4 py-2 font-body-base text-body-base text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary focus:outline-none transition-colors" />
           </div>
           <div class="flex flex-col justify-center">
             <label class="block font-label-caps text-label-caps text-on-surface-variant mb-2 uppercase">Payment Method</label>
@@ -97,6 +97,10 @@ watch(() => props.show, (newVal) => {
 })
 
 const handleSave = () => {
+  if (isNaN(editItem.value.amount)) {
+    alert("Amount should be a number")
+    return
+  }
   if (!editItem.value.itemName || !editItem.value.bidderName || !editItem.value.wardName || !editItem.value.amount) {
     alert("Please fill in the required fields (Item Name, Bidder Name, Ward Name, Amount)")
     return

@@ -74,7 +74,7 @@
           <label class="font-label-caps text-label-caps text-on-surface-variant flex justify-between">
             FINAL AMOUNT <span class="text-outline">ALT+A</span>
           </label>
-          <div class="relative">
+          <div class="relative mt-2">
             <span class="absolute left-6 top-1/2 -translate-y-1/2 font-bid-amount-lg text-bid-amount-lg text-outline">₹</span>
             <input v-model="form.amount" type="text" placeholder="0" class="w-full bg-surface-dim border-2 border-primary-container text-on-surface font-bid-amount-lg text-bid-amount-lg rounded-lg py-6 pl-16 pr-6 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary tracking-wider" />
           </div>
@@ -150,8 +150,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import TopNavBar from '@/components/TopNavBar.vue'
+
+const API_URL = 'http://localhost:3000/api/sales'
 
 // Form State
 const form = ref({
@@ -163,34 +165,69 @@ const form = ref({
   amount: ''
 })
 
-// Mocked Historical Data
-const recentLots = ref([
-  { id: 1, status: 'PAID', ItemNumber: '401', time: '10:42 AM', bidderName: 'Joseph', itemName: 'Rolex Daytona 1989', price: '₹32,000' },
-  { id: 2, status: 'PAID', ItemNumber: '400', time: '10:38 AM', bidderName: 'Alice', itemName: 'Patek Philippe Calatrava', price: '₹18,500' },
-  { id: 3, status: 'UNPAID', ItemNumber: '399', time: '10:35 AM', bidderName: 'Bob', itemName: 'Vintage Cartier Tank', price: '₹12,000' },
-  { id: 4, status: 'PAID', ItemNumber: '398', time: '10:31 AM', bidderName: 'Carol', itemName: 'Omega Speedmaster Pro', price: '₹6,200' },
-  { id: 5, status: 'PAID', ItemNumber: '397', time: '10:28 AM', bidderName: 'David', itemName: 'Audemars Piguet Royal Oak', price: '₹45,000' }
-])
+// Mocked Historical Data (Now API Data)
+const recentLots = ref([])
+
+const fetchSales = async () => {
+  try {
+    const res = await fetch(API_URL)
+    const data = await res.json()
+    recentLots.value = data.map(sale => ({
+      id: sale.id,
+      status: sale.paymentDone ? 'PAID' : 'UNPAID',
+      ItemNumber: sale.itemId ? sale.itemId.toString() : 'N/A',
+      time: new Date(sale.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      bidderName: sale.bidderName,
+      itemName: sale.itemName,
+      price: `₹${sale.amount}`
+    }))
+  } catch (error) {
+    console.error('Failed to fetch sales:', error)
+  }
+}
+
+onMounted(() => {
+  fetchSales()
+})
 
 // Actions
-const recordSale = () => {
+const recordSale = async () => {
+  if( isNaN(form.value.amount) ){
+    alert('Amount should be a number')
+    return
+  }
+
   if(!form.value.itemName || !form.value.bidderName || !form.value.amount || !form.value.paymentMethod || !form.value.wardName){
-    alert('Please fill all the required fields');
-    return;
+    alert('Please fill all the required fields')
+    return
   }
   
-  // Add new sale to top of array
-  recentLots.value.unshift({
-    id: Date.now(),
-    status: form.value.paymentDone ? 'PAID' : 'UNPAID',
-    ItemNumber: 'N/A',
-    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    bidderName: form.value.bidderName,
-    itemName: form.value.itemName, 
-    price: `₹${form.value.amount}`
-  })
+  try {
+    const numericAmount = parseFloat(form.value.amount) || 0
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        itemId: Math.floor(Math.random() * 1000000), // Random ID generated locally
+        itemName: form.value.itemName,
+        bidderName: form.value.bidderName,
+        wardName: form.value.wardName,
+        paymentMethod: form.value.paymentMethod,
+        paymentDone: form.value.paymentDone,
+        amount: numericAmount
+      })
+    })
 
-  clearForm()
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.error || 'Failed to record sale')
+    }
+
+    await fetchSales()
+    clearForm()
+  } catch (error) {
+    alert(error.message)
+  }
 }
 
 const clearForm = () => {

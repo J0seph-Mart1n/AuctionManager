@@ -122,7 +122,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import TopNavBar from '@/components/TopNavBar.vue'
 import EditEntryModal from '@/components/EditEntryModal.vue'
 import { exportToCSV } from '@/utils/export.js'
@@ -132,15 +132,35 @@ const searchQuery = ref('')
 const showEditModal = ref(false)
 const entryToEdit = ref(null)
 
-// Mocked Entries Data (representing data created in LiveAuction)
-const entries = ref([
-  { id: 1, itemName: 'Rolex Daytona 1989', bidderName: 'Joseph', wardName: 'Watches', paymentMethod: 'online', paymentDone: true, amount: 32000, selected: false },
-  { id: 2, itemName: 'Patek Philippe Calatrava', bidderName: 'Alice', wardName: 'Watches', paymentMethod: 'cash', paymentDone: true, amount: 18500, selected: false },
-  { id: 3, itemName: 'Vintage Cartier Tank', bidderName: 'Bob', wardName: 'Watches', paymentMethod: 'cash', paymentDone: false, amount: 12000, selected: false },
-  { id: 4, itemName: 'Omega Speedmaster Pro', bidderName: 'Carol', wardName: 'Watches', paymentMethod: 'online', paymentDone: true, amount: 6200, selected: false },
-  { id: 5, itemName: 'Audemars Piguet Royal Oak', bidderName: 'David', wardName: 'Watches', paymentMethod: 'online', paymentDone: true, amount: 45000, selected: false },
-  { id: 6, itemName: 'Hermès Birkin 35', bidderName: 'Emma', wardName: 'Handbags', paymentMethod: 'cash', paymentDone: false, amount: 14500, selected: false }
-])
+// API URL
+const API_URL = 'http://localhost:3000/api/sales'
+
+// Entries Data
+const entries = ref([])
+
+const fetchSales = async () => {
+  try {
+    const res = await fetch(API_URL)
+    const data = await res.json()
+    entries.value = data.map(sale => ({
+      id: sale.id,
+      itemId: sale.itemId,
+      itemName: sale.itemName,
+      bidderName: sale.bidderName,
+      wardName: sale.wardName,
+      paymentMethod: sale.paymentMethod,
+      paymentDone: sale.paymentDone,
+      amount: sale.amount,
+      selected: false
+    }))
+  } catch (error) {
+    console.error('Failed to fetch sales:', error)
+  }
+}
+
+onMounted(() => {
+  fetchSales()
+})
 
 // --- Computed ---
 const filteredEntries = computed(() => {
@@ -182,19 +202,42 @@ const closeEditModal = () => {
   showEditModal.value = false
 }
 
-const saveEntry = (entryData) => {
+const saveEntry = async (entryData) => {
   if (entryData.id) {
-    const index = entries.value.findIndex(e => e.id === entryData.id)
-    if (index !== -1) {
-      entries.value[index] = { ...entryData }
+    try {
+      const response = await fetch(`${API_URL}/${entryData.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          itemId: entryData.itemId,
+          itemName: entryData.itemName,
+          bidderName: entryData.bidderName,
+          wardName: entryData.wardName,
+          paymentMethod: entryData.paymentMethod,
+          paymentDone: entryData.paymentDone,
+          amount: parseFloat(entryData.amount) || 0
+        })
+      })
+      if (!response.ok) throw new Error('Failed to update entry')
+      await fetchSales()
+    } catch (error) {
+      alert(error.message)
     }
   }
   closeEditModal()
 }
 
-const deleteEntry = (id) => {
+const deleteEntry = async (id) => {
   if(confirm('Are you sure you want to delete this entry?')) {
-    entries.value = entries.value.filter(e => e.id !== id)
+    try {
+      const response = await fetch(`${API_URL}/${id}`, {
+        method: 'DELETE'
+      })
+      if (!response.ok) throw new Error('Failed to delete entry')
+      entries.value = entries.value.filter(e => e.id !== id)
+    } catch (error) {
+      alert(error.message)
+    }
   }
 }
 
