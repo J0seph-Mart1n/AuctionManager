@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LiveAuctionView from '@/views/LiveAuctionView.vue'
 import PreAuctionView from '@/views/PreAuctionView.vue'
 import PostAuctionView from '@/views/PostAuctionView.vue'
+import DashboardView from '@/views/DashboardView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,6 +22,11 @@ const router = createRouter({
       path: '/post-auction',
       name: 'post-auction',
       component: PostAuctionView
+    },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: DashboardView
     }
   ],
 })

@@ -16,6 +16,14 @@
     </div>
 
     <div class="flex-1 py-4 flex flex-col gap-1">
+      <router-link to="/dashboard" :class="[
+        'flex items-center py-3 transition-all duration-200 ease-in-out font-inter text-[13px] font-semibold',
+        route.path === '/dashboard' ? 'bg-[#0F172A] text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800 border-l-4 border-transparent',
+        isCollapsed ? 'px-0 justify-center' : 'px-4'
+      ]" :title="isCollapsed ? 'Dashboard' : ''">
+        <span class="material-symbols-outlined shrink-0" :class="isCollapsed ? 'mr-0' : 'mr-3'">analytics</span>
+        <span v-show="!isCollapsed" class="whitespace-nowrap overflow-hidden">Dashboard</span>
+      </router-link>
       <router-link to="/pre-auction" :class="[
         'flex items-center py-3 transition-all duration-200 ease-in-out font-inter text-[13px] font-semibold',
         route.path === '/pre-auction' ? 'bg-[#0F172A] text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800 border-l-4 border-transparent',
