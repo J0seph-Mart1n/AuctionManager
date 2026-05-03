@@ -121,7 +121,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import TopNavBar from '@/components/TopNavBar.vue'
 import AddItemModal from '@/components/AddItemModal.vue'
 import { exportToCSV } from '@/utils/export.js'
@@ -130,45 +130,31 @@ const searchQuery = ref('')
 const showAddModal = ref(false)
 const itemToEdit = ref(null)
 
-// Mock Data
-const items = ref([
-  { 
-    id: 1, 
-    itemNumber: '1001', 
-    title: '1967 Ford Mustang Shelby GT500', 
-    description: 'Original condition, matching numbers, 428 Police Interceptor V8.', 
-    amount: '₹125,000', 
-    shop: 'Classic Motors LLC', 
-    selected: false
-  },
-  { 
-    id: 2, 
-    itemNumber: '1002', 
-    title: 'Patek Philippe Nautilus Ref. 5711', 
-    description: 'Stainless steel, blue dial, complete with box and papers.', 
-    amount: '₹85,000', 
-    shop: 'Private Collector (ID: 442)', 
-    selected: false
-  },
-  { 
-    id: 3, 
-    itemNumber: '1003', 
-    title: 'Original Banksy Screenprint "Girl with Balloon"', 
-    description: 'Signed edition of 150. Pest Control COA included.', 
-    amount: '₹150,000', 
-    shop: 'Urban Art Gallery', 
-    selected: false
-  },
-  { 
-    id: 4, 
-    itemNumber: '1004', 
-    title: 'Mid-Century Modern Teak Credenza', 
-    description: 'Hans Wegner for Ry Møbler. Minor restoration needed on left door.', 
-    amount: '₹4,500', 
-    shop: 'Estate Liquidators Inc.', 
-    selected: false
+// API URL
+const API_URL = 'http://localhost:3000/api/items'
+
+// Items State
+const items = ref([])
+
+// Fetch Items
+const fetchItems = async () => {
+  try {
+    const response = await fetch(API_URL)
+    const data = await response.json()
+    // Map data to ensure frontend specific properties like `selected` exist and format amount
+    items.value = data.map(item => ({
+      ...item,
+      amount: `₹${item.amount}`,
+      selected: false
+    }))
+  } catch (error) {
+    console.error('Error fetching items:', error)
   }
-])
+}
+
+onMounted(() => {
+  fetchItems()
+})
 
 // Computed property for Search Filtering
 const filteredItems = computed(() => {
@@ -199,30 +185,51 @@ const closeAddModal = () => {
   showAddModal.value = false
 }
 
-const saveItem = (itemData) => {
-  const formattedReserve = itemData.amount.startsWith('₹') ? itemData.amount : `₹${itemData.amount}`
+const saveItem = async (itemData) => {
+  const numericAmount = parseFloat(itemData.amount.replace(/[^0-9.-]+/g, '')) || 0
   
-  if (itemData.id) {
-    const index = items.value.findIndex(i => i.id === itemData.id)
-    if (index !== -1) {
-      items.value[index].title = itemData.title
-      items.value[index].description = itemData.description
-      items.value[index].amount = formattedReserve
-      items.value[index].shop = itemData.shop
+  try {
+    if (itemData.id) {
+      // Update existing item
+      const response = await fetch(`${API_URL}/${itemData.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          itemNumber: items.value.find(i => i.id === itemData.id)?.itemNumber,
+          title: itemData.title,
+          description: itemData.description,
+          amount: numericAmount,
+          shop: itemData.shop
+        })
+      })
+      
+      if (!response.ok) throw new Error('Failed to update item')
+      
+    } else {
+      // Create new item
+      const newItemNumber = (items.value.length + 1).toString()
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          itemNumber: newItemNumber,
+          title: itemData.title,
+          description: itemData.description,
+          amount: numericAmount,
+          shop: itemData.shop
+        })
+      })
+      
+      if (!response.ok) throw new Error('Failed to create item')
     }
-  } else {
-    items.value.unshift({
-      id: Date.now(),
-      itemNumber: (1000 + items.value.length + 1).toString(),
-      title: itemData.title,
-      description: itemData.description,
-      amount: formattedReserve,
-      shop: itemData.shop,
-      selected: false
-    })
+    
+    // Refresh the list after save
+    await fetchItems()
+    closeAddModal()
+  } catch (error) {
+    console.error('Error saving item:', error)
+    alert(error.message)
   }
-  
-  closeAddModal()
 }
 
 const editItem = (id) => {
@@ -239,9 +246,19 @@ const editItem = (id) => {
   }
 }
 
-const deleteItem = (id) => {
-  if(confirm('Are you sure you want to delete this item?')) {
-    items.value = items.value.filter(item => item.id !== id)
+const deleteItem = async (id) => {
+  if (confirm('Are you sure you want to delete this item?')) {
+    try {
+      const response = await fetch(`${API_URL}/${id}`, {
+        method: 'DELETE'
+      })
+      if (!response.ok) throw new Error('Failed to delete item')
+      
+      items.value = items.value.filter(item => item.id !== id)
+    } catch (error) {
+      console.error('Error deleting item:', error)
+      alert(error.message)
+    }
   }
 }
 
