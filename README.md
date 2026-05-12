@@ -1,27 +1,19 @@
 # AuctionManager
 
-This template should help get you started developing with Vue 3 in Vite.
+AuctionManager is a modern web application designed to manage auctions and provide real-time analytical insights. It is built with a cutting-edge frontend stack to ensure high performance and a great developer experience.
 
-## Recommended IDE Setup
+## Features
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- **Vue 3 & Composition API:** Built with the latest Vue 3 capabilities for optimal performance and reactivity.
+- **Vite:** Lightning-fast cold server start and instant Hot Module Replacement (HMR).
+- **TypeScript:** Strongly typed codebase for better maintainability and developer experience.
+- **Tailwind CSS:** Utility-first CSS framework for rapid, responsive, and aesthetic UI development.
+- **Pinia:** Intuitive and type-safe state management.
+- **Vue Router:** Smooth client-side routing for seamless navigation.
 
-## Recommended Browser Setup
+## Prerequisites
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
+- Node.js (v20.19.0 or newer, >=22.12.0 recommended)
 
 ## Project Setup
 
@@ -41,8 +33,25 @@ npm run dev
 npm run build
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+### Linting & Formatting
+
+The project uses ESLint, Prettier, and Oxlint to maintain code quality.
 
 ```sh
+# Run all linters
 npm run lint
+
+# Format code with Prettier
+npm run format
 ```
+
+## Recommended IDE Setup
+
+[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+
+## Recommended Browser Setup
+
+- Chromium-based browsers (Chrome, Edge, Brave, etc.):
+  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
+- Firefox:
+  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
